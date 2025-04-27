@@ -5,17 +5,13 @@ from fastapi import UploadFile
 import io
 from .schemas import DetectionResponse, Detection, BoundingBox, ImageDimensions
 import time
+from ultralytics import YOLO
+import os
 
 class YOLODetector:
     def __init__(self):
-        # Load YOLOv5n model
-        self.model = torch.hub.load('ultralytics/yolov5', 'yolov5n', pretrained=True)
-        # Set model to evaluation mode
-        self.model.eval()
-        # Move to GPU if available
-        if torch.cuda.is_available():
-            self.model.cuda()
-        
+        # Load YOLOv5n model using Ultralytics package
+        self.model = YOLO('yolov5n')
         # Set confidence threshold
         self.model.conf = 0.25
         # Only detect people (class 0)
@@ -40,23 +36,25 @@ class YOLODetector:
         
         # Process detections
         detections = []
-        for pred in results.xyxy[0]:  # xyxy format: x1, y1, x2, y2, confidence, class
-            if pred[5] == 0:  # class 0 is person
-                x1, y1, x2, y2, conf = pred[:5].tolist()
-                
-                # Convert to x, y, width, height format
-                bbox = BoundingBox(
-                    x=x1,
-                    y=y1,
-                    width=x2 - x1,
-                    height=y2 - y1,
-                    confidence=conf
-                )
-                
-                detections.append(Detection(
-                    bbox=bbox,
-                    confidence=conf
-                ))
+        for result in results:
+            for box in result.boxes:
+                if box.cls == 0:  # class 0 is person
+                    x1, y1, x2, y2 = box.xyxy[0].tolist()
+                    conf = box.conf.item()
+                    
+                    # Convert to x, y, width, height format
+                    bbox = BoundingBox(
+                        x=x1,
+                        y=y1,
+                        width=x2 - x1,
+                        height=y2 - y1,
+                        confidence=conf
+                    )
+                    
+                    detections.append(Detection(
+                        bbox=bbox,
+                        confidence=conf
+                    ))
         
         return DetectionResponse(
             total_people=len(detections),
