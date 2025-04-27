@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { DetectionResponse } from './types/detection';
 
-const BACKEND_URL = 'http://localhost:8000';
+const BACKEND_URL = 'https://bot-1y47.onrender.com';
 const POLLING_INTERVAL = 500; // ms
 
 function App() {

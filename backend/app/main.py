@@ -13,7 +13,7 @@ app = FastAPI(title="Person Detection API")
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # React app
+    allow_origins=["http://localhost:5173", "https://drone-footage.cicr.in"],  # React app
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
