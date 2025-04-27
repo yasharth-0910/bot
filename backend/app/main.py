@@ -4,9 +4,9 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 import time
 from datetime import datetime
-
 from .model import YOLODetector
-from .schemas import DetectionResponse
+from .schemas import DetectionResponse, Detection, BoundingBox, ImageDimensions
+import uvicorn
 
 app = FastAPI(title="Person Detection API")
 
@@ -25,6 +25,14 @@ model = YOLODetector()
 @app.get("/")
 async def root():
     return {"message": "Person Detection API"}
+
+@app.get("/model-info/")
+async def model_info():
+    return {
+        "model_name": "YOLOv5nu",
+        "confidence_threshold": model.model.conf,
+        "classes": model.model.classes
+    }
 
 @app.post("/detect/", response_model=DetectionResponse)
 async def detect_people(file: UploadFile = File(...)):
@@ -51,4 +59,7 @@ async def detect_people(file: UploadFile = File(...)):
         )
     finally:
         process_time = time.time() - start_time
-        logger.debug(f"Processing time: {process_time:.2f} seconds") 
+        logger.debug(f"Processing time: {process_time:.2f} seconds")
+
+if __name__ == "__main__":
+    uvicorn.run("app.main:app", host="0.0.0.0", port=10000)
