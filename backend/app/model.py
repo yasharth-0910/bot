@@ -11,7 +11,7 @@ import os
 class YOLODetector:
     def __init__(self):
         # Load YOLOv5n model using Ultralytics package
-        self.model = YOLO('yolov5n')
+        self.model = YOLO('./models/yolov5n.pt')
         # Set confidence threshold
         self.model.conf = 0.25
         # Only detect people (class 0)
