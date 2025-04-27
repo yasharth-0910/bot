@@ -8,4 +8,5 @@ numpy==1.26.4
 python-dotenv==1.0.1
 pydantic==2.6.3
 python-jose==3.3.0
-loguru==0.7.2 
+loguru==0.7.2
+ultralytics==8.0.55  # Add ultralytics version
